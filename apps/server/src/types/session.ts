@@ -4,18 +4,18 @@ export interface Session {
   startTime: Date;
   lastUpdated: Date;
   type: string;
-  state: Record<string, any>;
+  state: Record<string, unknown>;
 }
 
 export interface CreateSessionDto {
   name: string;
   type: string;
-  state?: Record<string, any>;
+  state?: Record<string, unknown>;
 }
 
 export interface UpdateSessionDto {
   name?: string;
-  state?: Record<string, any>;
+  state?: Record<string, unknown>;
 }
 
 // Blood on the Clocktower Script Types
@@ -47,4 +47,4 @@ export interface ScriptState {
   characters: BloodOnTheClockTowerCharacter[];
 }
 
-export type SessionState = ScriptState | Record<string, any>;
+export type SessionState = ScriptState | Record<string, unknown>;

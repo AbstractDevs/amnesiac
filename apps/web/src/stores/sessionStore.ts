@@ -42,7 +42,7 @@ export const useSessionStore = defineStore('sessions', () => {
 
       // Handle the API response format: {success: true, data: Session[]}
       if (response && typeof response === 'object' && 'data' in response) {
-        sessions.value = (response as any).data as Session[];
+        sessions.value = (response as {data: Session[]}).data;
       } else {
         // Fallback for direct array response
         sessions.value = response as Session[];
@@ -65,7 +65,7 @@ export const useSessionStore = defineStore('sessions', () => {
       // Handle the API response format: {success: true, data: Session}
       let newSession: Session;
       if (response && typeof response === 'object' && 'data' in response) {
-        newSession = (response as any).data as Session;
+        newSession = (response as {data: Session}).data;
       } else {
         newSession = response as Session;
       }
@@ -108,7 +108,7 @@ export const useSessionStore = defineStore('sessions', () => {
       // Handle the API response format: {success: true, data: Session}
       let updatedSession: Session;
       if (response && typeof response === 'object' && 'data' in response) {
-        updatedSession = (response as any).data as Session;
+        updatedSession = (response as {data: Session}).data;
       } else {
         updatedSession = response as Session;
       }

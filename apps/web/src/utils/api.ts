@@ -18,7 +18,7 @@ const getApiUrl = (): string => {
 // Generic API fetch wrapper
 export const apiClient = {
   baseUrl: getApiBaseUrl(),
-  
+
   async get<T>(endpoint: string): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
     console.log('API GET request to:', url);
@@ -30,8 +30,8 @@ export const apiClient = {
     console.log('API GET response:', data);
     return data;
   },
-  
-  async post<T>(endpoint: string, data: any): Promise<T> {
+
+  async post<T>(endpoint: string, data: unknown): Promise<T> {
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       method: 'POST',
       headers: {
@@ -44,8 +44,8 @@ export const apiClient = {
     }
     return response.json();
   },
-  
-  async put<T>(endpoint: string, data: any): Promise<T> {
+
+  async put<T>(endpoint: string, data: unknown): Promise<T> {
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       method: 'PUT',
       headers: {
@@ -58,7 +58,7 @@ export const apiClient = {
     }
     return response.json();
   },
-  
+
   async delete<T>(endpoint: string): Promise<T> {
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       method: 'DELETE',
@@ -86,24 +86,24 @@ export const sessionApi = {
   async getAllSessions() {
     return apiClient.get('/sessions');
   },
-  
+
   async getSession(id: string) {
     return apiClient.get(`/sessions/${id}`);
   },
-  
-  async createSession(sessionData: any) {
+
+  async createSession(sessionData: Record<string, unknown>) {
     return apiClient.post('/sessions', sessionData);
   },
-  
-  async updateSession(id: string, sessionData: any) {
+
+  async updateSession(id: string, sessionData: Record<string, unknown>) {
     return apiClient.put(`/sessions/${id}`, sessionData);
   },
-  
+
   async deleteSession(id: string) {
     return apiClient.delete(`/sessions/${id}`);
   },
-  
-  async updateSessionState(id: string, state: any) {
+
+  async updateSessionState(id: string, state: Record<string, unknown>) {
     return apiClient.put(`/sessions/${id}/state`, { state });
   },
 };

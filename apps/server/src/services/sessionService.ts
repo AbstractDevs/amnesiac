@@ -51,7 +51,7 @@ class SessionService {
 
   async updateSessionState(
     id: string,
-    state: Record<string, any>
+    state: Record<string, unknown>
   ): Promise<Session | null> {
     const session = this.sessions.get(id);
     if (!session) {
