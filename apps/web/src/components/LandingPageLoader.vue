@@ -24,12 +24,8 @@
     <ServerErrorPage v-else-if="showServerError" :errorMessage="serverError" />
 
     <!-- No Sessions -->
-    <NoSessionsView
-      v-else-if="sessionCount === 0"
-      ref="noSessionsViewRef"
-      @recheckSessions="recheckSessions"
-      @startRecheck="startRecheck"
-    />
+    <!-- No Sessions -->
+    <NoSessionsView v-else-if="sessionCount === 0" />
 
     <!-- Single Session -->
     <ScriptPage v-else-if="sessionCount === 1" :sessionData="sessions[0]" />
@@ -62,9 +58,6 @@ const showServerError = ref(false);
 const serverError = ref('');
 const sessions = ref<Session[]>([]);
 const sessionCount = ref(0);
-
-// Reference to NoSessionsView component
-const noSessionsViewRef = ref<InstanceType<typeof NoSessionsView> | null>(null);
 
 // Get server URL based on environment
 const getServerUrl = () => {
@@ -189,35 +182,6 @@ const initialize = async () => {
   } finally {
     loading.value = false;
   }
-};
-
-// Recheck sessions when called from NoSessionsView
-const recheckSessions = async () => {
-  // Only fetch sessions, skip health check since we already know server is healthy
-  try {
-    const sessionData = await fetchSessions();
-    sessions.value = sessionData;
-    sessionCount.value = sessionData.length;
-
-    // If still no sessions, restart polling with updated delays
-    if (sessionData.length === 0 && noSessionsViewRef.value) {
-      noSessionsViewRef.value.resetPolling();
-    }
-  } catch (err) {
-    console.warn('Failed to recheck sessions:', err);
-    // Don't set error state here, just continue polling
-    if (noSessionsViewRef.value) {
-      noSessionsViewRef.value.resetPolling();
-    }
-  } finally {
-    loading.value = false;
-  }
-};
-
-// Show loading state when NoSessionsView starts a recheck
-const startRecheck = () => {
-  loading.value = true;
-  loadingMessage.value = 'Rechecking for sessions...';
 };
 
 // Initialize on component mount

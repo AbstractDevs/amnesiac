@@ -5,11 +5,11 @@
     <main class="mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8">
       <div class="py-16 text-center">
         <!-- Amnesiac Icon -->
-        <div class="mb-8">
+        <div class="mb-4">
           <img
             src="https://wiki.bloodontheclocktower.com/images/2/26/Icon_amnesiac.png"
             alt="Amnesiac Icon"
-            class="mx-auto h-96 w-96 opacity-70 dark:opacity-50"
+            class="mx-auto h-80 w-80 opacity-70 dark:opacity-50"
             style="
               object-fit: cover;
               object-position: center;
@@ -30,7 +30,8 @@
 
         <!-- Countdown Message -->
         <p class="text-sm italic text-gray-500 dark:text-gray-400">
-          Rechecking for sessions in {{ countdown }} seconds...
+          Refreshing page in {{ countdown }} seconds to check for new
+          sessions...
         </p>
       </div>
     </main>
@@ -40,29 +41,20 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
 
-const emit = defineEmits<{
-  recheckSessions: [];
-  startRecheck: [];
-}>();
-
 // Countdown and polling state
-const countdown = ref(10);
-const pollAttempts = ref(0);
+const countdown = ref(30);
 let countdownInterval: number | undefined;
 
 // Get current polling delay based on attempt count
 const getCurrentDelay = (): number => {
-  if (pollAttempts.value < 3) {
-    return 10; // First 3 attempts: 10 seconds
-  } else if (pollAttempts.value < 6) {
-    return 30; // Next 3 attempts: 30 seconds
-  } else {
-    return 60; // All subsequent attempts: 60 seconds
-  }
+  return 30; // Simple 30 second delay
 };
 
 // Start countdown and auto-recheck
 const startPolling = () => {
+  // Clear any existing interval first
+  cleanup();
+
   const delay = getCurrentDelay();
   countdown.value = delay;
 
@@ -71,30 +63,16 @@ const startPolling = () => {
     countdown.value--;
 
     if (countdown.value <= 0) {
-      // Increment attempt counter
-      pollAttempts.value++;
-
-      // Emit event to parent to show loading state
-      emit('startRecheck');
-
-      // Small delay to show loading, then emit recheck
-      setTimeout(() => {
-        emit('recheckSessions');
-      }, 100);
-
-      // Cleanup current interval - new one will be started if needed
+      // Clear the interval immediately to prevent multiple triggers
       if (countdownInterval) {
         clearInterval(countdownInterval);
         countdownInterval = undefined;
       }
+
+      // Refresh the page to check for new sessions
+      window.location.reload();
     }
   }, 1000);
-};
-
-// Reset polling (called from parent when this component is shown again)
-const resetPolling = () => {
-  cleanup(); // Ensure any existing intervals are cleared first
-  startPolling();
 };
 
 // Cleanup intervals
@@ -112,10 +90,5 @@ onMounted(() => {
 
 onUnmounted(() => {
   cleanup();
-});
-
-// Expose reset function to parent
-defineExpose({
-  resetPolling,
 });
 </script>
