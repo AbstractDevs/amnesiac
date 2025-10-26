@@ -2,12 +2,16 @@
 import { defineConfig } from 'astro/config';
 import vue from '@astrojs/vue';
 import { VitePWA } from 'vite-plugin-pwa';
-
-import tailwindcss from '@tailwindcss/vite';
+import tailwind from '@astrojs/tailwind';
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [vue()],
+  integrations: [
+    vue(),
+    tailwind({
+      applyBaseStyles: false, // We'll handle this in our global.css
+    }),
+  ],
   site: 'https://abstractdevs.github.io',
   base: '/amnesiac',
   vite: {
@@ -33,7 +37,6 @@ export default defineConfig({
           ],
         },
       }),
-      tailwindcss(),
     ],
   },
 });
