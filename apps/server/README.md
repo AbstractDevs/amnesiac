@@ -46,7 +46,7 @@ bun start
 Access the interactive Swagger documentation at:
 
 - **Development**: `http://localhost:3000/api-docs`
-- **Production**: `http://64.225.49.223:3001/api-docs`
+- **Production**: `http://64.225.49.223:3000/api-docs`
 
 The Swagger UI provides:
 

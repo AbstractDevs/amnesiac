@@ -21,7 +21,7 @@ const options: swaggerJSDoc.Options = {
         description: 'Development server',
       },
       {
-        url: 'http://64.225.49.223:3001',
+        url: 'http://64.225.49.223:3000',
         description: 'Production server',
       },
     ],
@@ -198,8 +198,8 @@ export const setupSwagger = (app: Express): void => {
     directives: {
       defaultSrc: ["'self'"],
       scriptSrc: [
-        "'self'", 
-        "'unsafe-inline'", 
+        "'self'",
+        "'unsafe-inline'",
         "'unsafe-eval'",
         "'sha256-ieoeWczDHkReVBsRBqaal5AFMlBtNjMzgwKvLqi/tSU='"
       ],
@@ -211,7 +211,7 @@ export const setupSwagger = (app: Express): void => {
 
   // Apply relaxed CSP only to Swagger routes
   app.use('/api-docs*', swaggerCSP);
-  
+
   // Swagger UI setup
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, {
     explorer: true,
