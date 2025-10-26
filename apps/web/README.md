@@ -7,6 +7,11 @@ A Progressive Web App for Blood on the Clocktower players, built with Astro, Typ
 - **Bun** 1.2+ (recommended) or Node.js 18+
 - Modern web browser with PWA support
 
+## Live Demo
+
+- **Production**: <https://abstractdevs.github.io/amnesiac/>
+- **API Documentation**: <http://64.225.49.223:3000/api-docs>
+
 ## Features
 
 - 🎭 Display Blood on the Clocktower game scripts
