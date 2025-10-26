@@ -1,6 +1,10 @@
 ---
+import Layout from '../layouts/Layout.astro';
+import ThemeToggle from '../components/ThemeToggle.vue';
+
 // Fetch the Blood on the Clocktower script data
-const scriptUrl = 'https://raw.githubusercontent.com/AbstractDevs/librarian/refs/heads/main/src/data/scripts/rotting-moors/latest.json';
+const scriptUrl =
+  'https://raw.githubusercontent.com/AbstractDevs/librarian/refs/heads/main/src/data/scripts/rotting-moors/latest.json';
 
 let scriptData: any[] = [];
 try {
@@ -11,62 +15,112 @@ try {
 }
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}favicon.svg`} />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<meta name="generator" content={Astro.generator} />
-		<meta name="description" content="Amnesiac - Blood on the Clocktower companion app" />
-		<title>Amnesiac - Blood on the Clocktower</title>
-		<style>
-			body {
-				font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-				max-width: 800px;
-				margin: 0 auto;
-				padding: 2rem;
-				line-height: 1.6;
-				background: #1a1a1a;
-				color: #e0e0e0;
-			}
-			.script-header {
-				background: #2a2a2a;
-				padding: 1.5rem;
-				border-radius: 8px;
-				margin-bottom: 2rem;
-			}
-			.script-data {
-				background: #333;
-				padding: 1rem;
-				border-radius: 4px;
-				overflow-x: auto;
-			}
-			pre {
-				margin: 0;
-				font-size: 0.9rem;
-			}
-			h1 {
-				color: #ff6b6b;
-				margin-bottom: 0.5rem;
-			}
-			.subtitle {
-				color: #888;
-				margin-bottom: 1rem;
-			}
-		</style>
-	</head>
-	<body>
-		<div class="script-header">
-			<h1>Amnesiac</h1>
-			<p class="subtitle">Blood on the Clocktower Companion</p>
-			{scriptData.length > 0 && scriptData[0].id === '_meta' && (
-				<p><strong>Current Script:</strong> {scriptData[0].name} by {scriptData[0].author}</p>
-			)}
-		</div>
+<Layout title="Amnesiac - Blood on the Clocktower">
+  <div
+    class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800"
+  >
+    <!-- Header -->
+    <header
+      class="border-b border-gray-200 bg-white/80 backdrop-blur-sm dark:border-gray-700 dark:bg-gray-900/80"
+    >
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="flex h-16 items-center justify-between">
+          <div class="flex items-center">
+            <h1 class="text-2xl font-bold text-red-600 dark:text-red-400">
+              Amnesiac
+            </h1>
+            <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">
+              Blood on the Clocktower
+            </span>
+          </div>
+          <ThemeToggle client:load />
+        </div>
+      </div>
+    </header>
 
-		<div class="script-data">
-			<h2>Script Data (Raw)</h2>
-			<pre>{JSON.stringify(scriptData, null, 2)}</pre>
-		</div>
-	</body>
-</html>
+    <!-- Main Content -->
+    <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <!-- Mobile/Desktop responsive grid -->
+      <div class="grid gap-6 md:gap-8">
+        <!-- Script Info Card -->
+        {
+          scriptData.length > 0 && scriptData[0].id === '_meta' && (
+            <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm md:p-6 dark:border-gray-700 dark:bg-gray-800">
+              <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div class="space-y-2">
+                  <h2 class="text-lg font-semibold text-gray-900 md:text-xl dark:text-gray-100">
+                    Current Script
+                  </h2>
+                  <p class="text-xl font-bold text-red-600 md:text-2xl dark:text-red-400">
+                    {scriptData[0].name}
+                  </p>
+                  <p class="text-sm text-gray-600 md:text-base dark:text-gray-400">
+                    by {scriptData[0].author}
+                  </p>
+                </div>
+                <div class="flex flex-row justify-between lg:flex-col lg:text-right">
+                  <div>
+                    <p class="text-2xl font-bold text-gray-900 md:text-3xl dark:text-gray-100">
+                      {scriptData.length - 1}
+                    </p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                      roles
+                    </p>
+                  </div>
+                  {/* Future: Add quick actions for mobile */}
+                  <div class="lg:hidden">
+                    <button class="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-none dark:bg-red-500 dark:hover:bg-red-600">
+                      View Roles
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )
+        }
+
+        {
+          /* Future: Role Cards Grid - Different layouts for mobile vs desktop */
+        }
+        <div
+          class="hidden rounded-lg border border-gray-200 bg-white p-4 shadow-sm md:p-6 dark:border-gray-700 dark:bg-gray-800"
+        >
+          <h3
+            class="mb-4 text-lg font-semibold text-gray-900 md:text-xl dark:text-gray-100"
+          >
+            Character Roles
+          </h3>
+          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {/* Role cards will go here */}
+            <div
+              class="rounded-md border-2 border-dashed border-gray-300 p-8 text-center dark:border-gray-600"
+            >
+              <p class="text-gray-500 dark:text-gray-400">
+                Role cards coming soon
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Development Section - Responsive sizing */}
+        <div
+          class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm md:p-6 dark:border-gray-700 dark:bg-gray-800"
+        >
+          <h3
+            class="mb-4 text-lg font-semibold text-gray-900 md:text-xl dark:text-gray-100"
+          >
+            Script Data (Development View)
+          </h3>
+          <div
+            class="overflow-auto rounded-md bg-gray-50 p-3 md:p-4 dark:bg-gray-900"
+          >
+            <pre
+              class="text-xs text-gray-800 md:text-sm dark:text-gray-200">
+              <code>{JSON.stringify(scriptData, null, 2)}</code>
+            </pre>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</Layout>

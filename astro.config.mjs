@@ -3,6 +3,8 @@ import { defineConfig } from 'astro/config';
 import vue from '@astrojs/vue';
 import { VitePWA } from 'vite-plugin-pwa';
 
+import tailwindcss from '@tailwindcss/vite';
+
 // https://astro.build/config
 export default defineConfig({
   integrations: [vue()],
@@ -13,7 +15,7 @@ export default defineConfig({
       VitePWA({
         registerType: 'autoUpdate',
         workbox: {
-          globPatterns: ['**/*.{js,css,html,ico,png,svg,json}']
+          globPatterns: ['**/*.{js,css,html,ico,png,svg,json}'],
         },
         manifest: {
           name: 'Amnesiac - Blood on the Clocktower',
@@ -26,11 +28,12 @@ export default defineConfig({
             {
               src: '/favicon.svg',
               sizes: 'any',
-              type: 'image/svg+xml'
-            }
-          ]
-        }
-      })
-    ]
-  }
+              type: 'image/svg+xml',
+            },
+          ],
+        },
+      }),
+      tailwindcss(),
+    ],
+  },
 });
