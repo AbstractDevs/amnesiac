@@ -13,29 +13,29 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
-          
+
       - name: Install dependencies
         run: bun install --frozen-lockfile
-        
+
       - name: Build server
         run: bun run build:server
-        
+
       - name: Create deployment package
         run: |
           mkdir -p deployment
           cp -r apps/server/dist deployment/
           cp apps/server/package.json deployment/
           cp apps/server/bun.lock deployment/ || true
-          
+
       - name: Deploy to DigitalOcean
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -45,33 +45,33 @@ jobs:
           script: |
             # Update system packages
             sudo apt-get update
-            
+
             # Install Node.js if not present
             if ! command -v node &> /dev/null; then
               curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
               sudo apt-get install -y nodejs
             fi
-            
+
             # Install Bun if not present
             if ! command -v bun &> /dev/null; then
               curl -fsSL https://bun.sh/install | bash
               export PATH="$HOME/.bun/bin:$PATH"
               sudo ln -s ~/.bun/bin/bun /usr/local/bin/bun || true
             fi
-            
+
             # Install PM2 if not present
             if ! command -v pm2 &> /dev/null; then
               sudo npm install -g pm2
             fi
-            
+
             # Create app directory
             sudo mkdir -p /var/www/amnesiac-server
             sudo chown $USER:$USER /var/www/amnesiac-server
-            
+
             # Stop existing application
             pm2 stop amnesiac-server || true
             pm2 delete amnesiac-server || true
-            
+
       - name: Copy files to server
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -81,7 +81,7 @@ jobs:
           source: "deployment/*"
           target: "/var/www/amnesiac-server"
           strip_components: 1
-          
+
       - name: Start application
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -90,19 +90,22 @@ jobs:
           key: ${{ secrets.DO_SSH_KEY }}
           script: |
             cd /var/www/amnesiac-server
-            
+
             # Install production dependencies with bun
             bun install --production
-            
+
             # Start with PM2 (use the correct entry point)
-            pm2 stop amnesiac-server || true
-            pm2 delete amnesiac-server || true
+            echo "🔄 Stopping existing server instance..."
+            pm2 stop amnesiac-server 2>/dev/null || true
+            pm2 delete amnesiac-server 2>/dev/null || true
+
+            echo "🚀 Starting new server instance..."
             pm2 start dist/app.js --name amnesiac-server
             pm2 save
-            
+
             # Wait a moment for the server to start
             sleep 5
-            
+
             # Check if the server is running
             if pm2 list | grep -q "amnesiac-server.*online"; then
               echo "✅ Server deployed successfully!"
