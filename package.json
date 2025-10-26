@@ -1,0 +1,42 @@
+{
+  "name": "amnesiac-monorepo",
+  "version": "1.0.0",
+  "description": "Amnesiac - Blood on the Clocktower PWA and Session Management API",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=apps/web",
+    "dev:web": "npm run dev --workspace=apps/web",
+    "dev:server": "npm run dev --workspace=apps/server",
+    "dev:all": "concurrently \"npm run dev:web\" \"npm run dev:server\"",
+    "build": "npm run build --workspace=apps/web",
+    "build:web": "npm run build --workspace=apps/web",
+    "build:server": "npm run build --workspace=apps/server",
+    "build:all": "npm run build:web && npm run build:server",
+    "build:shared": "npm run build --workspace=packages/shared",
+    "format": "prettier --check apps/*/src/**/*.{ts,vue,astro} packages/*/src/**/*.ts",
+    "format:fix": "prettier --write apps/*/src/**/*.{ts,vue,astro} packages/*/src/**/*.ts",
+    "lint": "npm run lint --workspace=apps/web && npm run lint --workspace=apps/server",
+    "lint:fix": "npm run lint:fix --workspace=apps/web && npm run lint:fix --workspace=apps/server",
+    "test": "npm run test --workspace=apps/web && npm run test --workspace=apps/server",
+    "clean": "rm -rf apps/*/node_modules apps/*/dist packages/*/node_modules packages/*/dist node_modules"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "prettier": "^3.0.0",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AbstractDevs/amnesiac-monorepo.git"
+  },
+  "author": "AbstractDevs",
+  "license": "MIT"
+}

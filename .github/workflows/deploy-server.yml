@@ -1,0 +1,94 @@
+name: Deploy Server to DigitalOcean
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/server/**'
+      - 'packages/**'
+      - '.github/workflows/deploy-server.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Build server
+        run: npm run build:server
+        
+      - name: Create deployment package
+        run: |
+          mkdir -p deployment
+          cp -r apps/server/dist deployment/
+          cp apps/server/package.json deployment/
+          cp apps/server/package-lock.json deployment/ || true
+          
+      - name: Deploy to DigitalOcean
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.DO_HOST }}
+          username: ${{ secrets.DO_USERNAME }}
+          key: ${{ secrets.DO_SSH_KEY }}
+          script: |
+            # Update system packages
+            sudo apt-get update
+            
+            # Install Node.js if not present
+            if ! command -v node &> /dev/null; then
+              curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+              sudo apt-get install -y nodejs
+            fi
+            
+            # Install PM2 if not present
+            if ! command -v pm2 &> /dev/null; then
+              sudo npm install -g pm2
+            fi
+            
+            # Create app directory
+            sudo mkdir -p /var/www/amnesiac-server
+            sudo chown $USER:$USER /var/www/amnesiac-server
+            
+            # Stop existing application
+            pm2 stop amnesiac-server || true
+            pm2 delete amnesiac-server || true
+            
+      - name: Copy files to server
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.DO_HOST }}
+          username: ${{ secrets.DO_USERNAME }}
+          key: ${{ secrets.DO_SSH_KEY }}
+          source: "deployment/*"
+          target: "/var/www/amnesiac-server"
+          strip_components: 1
+          
+      - name: Start application
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.DO_HOST }}
+          username: ${{ secrets.DO_USERNAME }}
+          key: ${{ secrets.DO_SSH_KEY }}
+          script: |
+            cd /var/www/amnesiac-server
+            
+            # Install production dependencies
+            npm ci --only=production
+            
+            # Start with PM2
+            pm2 start dist/index.js --name amnesiac-server
+            pm2 save
+            pm2 startup
