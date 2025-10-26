@@ -45,9 +45,40 @@ astro.config.mjs          # PWA + GitHub Pages config
 ## Development Commands
 
 ```bash
-npm run dev      # Start dev server
-npm run build    # Build for production
-npm run preview  # Preview production build
+npm run dev          # Start dev server
+npm run build        # TypeScript check + build for production
+npm run format       # Check code formatting
+npm run format:fix   # Fix code formatting
+npm run lint         # Check for linting issues
+npm run lint:fix     # Fix linting issues
+npm run preview      # Preview production build
+```
+
+## Commit Workflow
+
+**IMPORTANT**: Always run before committing:
+
+1. `npm run format:fix` or `npx prettier --write .` - Format all code
+2. Check for and fix any linting/type errors
+3. Write descriptive commit message with scope (feat/fix/docs/etc.)
+4. Commit and push changes
+
+This ensures consistent code quality and prevents CI/CD issues.
+
+### Commit Message Format
+
+Use conventional commits format:
+
+```
+type(scope): description
+
+- feat: new features
+- fix: bug fixes
+- docs: documentation changes
+- style: formatting, no code change
+- refactor: code restructuring
+- test: adding tests
+- chore: maintenance tasks
 ```
 
 ## Configuration Notes
