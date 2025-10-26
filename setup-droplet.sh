@@ -10,6 +10,10 @@ echo "🚀 Setting up Amnesiac Server on DigitalOcean..."
 echo "📦 Updating system packages..."
 sudo apt update && sudo apt upgrade -y
 
+# Install required dependencies
+echo "📦 Installing required dependencies..."
+sudo apt-get install -y curl wget unzip build-essential
+
 # Install Node.js 18
 echo "📦 Installing Node.js 18..."
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
