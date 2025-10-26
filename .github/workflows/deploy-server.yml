@@ -34,7 +34,7 @@ jobs:
           mkdir -p deployment
           cp -r apps/server/dist deployment/
           cp apps/server/package.json deployment/
-          cp bun.lock deployment/ || true
+          # Don't copy lockfile since we'll do a fresh install on server
 
       - name: Deploy to DigitalOcean
         uses: appleboy/ssh-action@v1.0.0
@@ -91,12 +91,21 @@ jobs:
           script: |
             cd /var/www/amnesiac-server
 
-            # Remove existing node_modules to ensure clean install
-            rm -rf node_modules
+            # Remove existing node_modules and lockfiles to ensure clean install
+            rm -rf node_modules bun.lock package-lock.json
 
-            # Install production dependencies with bun
+            # Install production dependencies with bun (fresh install)
             echo "📦 Installing dependencies..."
-            bun install --production --frozen-lockfile
+            bun install --production
+
+            # Verify critical dependencies are installed
+            echo "🔍 Verifying installation..."
+            ls -la node_modules/ | head -10
+            
+            if [ ! -d "node_modules/express" ]; then
+              echo "❌ Express not found, trying npm install as fallback..."
+              npm install --production
+            fi
 
             # Start with PM2 (use the correct entry point)
             echo "🔄 Stopping existing server instance..."
@@ -104,7 +113,7 @@ jobs:
             pm2 delete amnesiac-server 2>/dev/null || true
 
             echo "🚀 Starting new server instance..."
-            pm2 start dist/app.js --name amnesiac-server
+            PORT=3001 pm2 start dist/app.js --name amnesiac-server
             pm2 save
 
             # Wait a moment for the server to start
@@ -113,7 +122,7 @@ jobs:
             # Check if the server is running
             if pm2 list | grep -q "amnesiac-server.*online"; then
               echo "✅ Server deployed successfully!"
-              curl -f http://localhost:3000/health || echo "⚠️ Health check failed, but server is running"
+              curl -f http://localhost:3001/health || echo "⚠️ Health check failed, but server is running"
             else
               echo "❌ Deployment failed - server not running"
               pm2 logs amnesiac-server --lines 20
