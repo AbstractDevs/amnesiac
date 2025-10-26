@@ -9,7 +9,7 @@
           <img
             src="https://wiki.bloodontheclocktower.com/images/2/26/Icon_amnesiac.png"
             alt="Amnesiac Icon"
-            class="mx-auto h-24 w-24 opacity-70 dark:opacity-50"
+            class="mx-auto h-96 w-96 opacity-70 dark:opacity-50"
           />
         </div>
 
@@ -37,29 +37,58 @@ import { ref, onMounted, onUnmounted } from 'vue';
 
 const emit = defineEmits<{
   recheckSessions: [];
+  startRecheck: [];
 }>();
 
-// Countdown state
+// Countdown and polling state
 const countdown = ref(10);
+const pollAttempts = ref(0);
 let countdownInterval: number | undefined;
-let recheckTimeout: number | undefined;
+
+// Get current polling delay based on attempt count
+const getCurrentDelay = (): number => {
+  if (pollAttempts.value < 3) {
+    return 10; // First 3 attempts: 10 seconds
+  } else if (pollAttempts.value < 6) {
+    return 30; // Next 3 attempts: 30 seconds
+  } else {
+    return 60; // All subsequent attempts: 60 seconds
+  }
+};
 
 // Start countdown and auto-recheck
 const startPolling = () => {
-  countdown.value = 10;
+  const delay = getCurrentDelay();
+  countdown.value = delay;
 
   // Start countdown
   countdownInterval = window.setInterval(() => {
     countdown.value--;
 
     if (countdown.value <= 0) {
-      // Emit event to parent to recheck sessions
-      emit('recheckSessions');
+      // Increment attempt counter
+      pollAttempts.value++;
 
-      // Reset countdown
-      countdown.value = 10;
+      // Emit event to parent to show loading state
+      emit('startRecheck');
+
+      // Small delay to show loading, then emit recheck
+      setTimeout(() => {
+        emit('recheckSessions');
+      }, 100);
+
+      // Cleanup current interval - new one will be started if needed
+      if (countdownInterval) {
+        clearInterval(countdownInterval);
+        countdownInterval = undefined;
+      }
     }
   }, 1000);
+};
+
+// Reset polling (called from parent when this component is shown again)
+const resetPolling = () => {
+  startPolling();
 };
 
 // Cleanup intervals
@@ -67,10 +96,6 @@ const cleanup = () => {
   if (countdownInterval) {
     clearInterval(countdownInterval);
     countdownInterval = undefined;
-  }
-  if (recheckTimeout) {
-    clearTimeout(recheckTimeout);
-    recheckTimeout = undefined;
   }
 };
 
@@ -81,5 +106,10 @@ onMounted(() => {
 
 onUnmounted(() => {
   cleanup();
+});
+
+// Expose reset function to parent
+defineExpose({
+  resetPolling,
 });
 </script>
