@@ -13,7 +13,21 @@ const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 
 // Middleware
-app.use(helmet()); // Security headers
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+      "script-src": [
+        "'self'",
+        "'unsafe-inline'",
+        "'unsafe-eval'",
+      ],
+      "style-src": ["'self'", "'unsafe-inline'"],
+      "img-src": ["'self'", "data:", "https:"],
+      "font-src": ["'self'", "https:", "data:"],
+    },
+  },
+})); // Security headers with Swagger UI compatibility
 app.use(cors()); // Enable CORS
 app.use(morgan('combined')); // Request logging
 app.use(express.json()); // Parse JSON bodies
