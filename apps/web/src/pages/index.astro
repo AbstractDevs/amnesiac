@@ -1,72 +1,11 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import ServerErrorPage from '../components/ServerErrorPage.vue';
-import ScriptPage from '../components/ScriptPage.vue';
-import SessionList from '../components/SessionList.vue';
-import NoSessionsView from '../components/NoSessionsView.vue';
+import LandingPageLoader from '../components/LandingPageLoader.vue';
 
-// Check if API server is available
-let showServerError = false;
-let serverError = '';
-let sessions: any[] = [];
-
-try {
-  const serverUrl = import.meta.env.PROD
-    ? 'https://206.189.92.179:3000'
-    : 'http://localhost:3000';
-
-  // First check server health
-  const healthResponse = await fetch(`${serverUrl}/health`, {
-    method: 'GET',
-    headers: {
-      Accept: 'application/json',
-    },
-  });
-
-  if (!healthResponse.ok) {
-    showServerError = true;
-    serverError = 'Server health check failed';
-  } else {
-    // Try to fetch sessions
-    try {
-      const sessionsResponse = await fetch(`${serverUrl}/api/sessions`, {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-        },
-      });
-
-      if (sessionsResponse.ok) {
-        const result = await sessionsResponse.json();
-        sessions = result.data || result || [];
-      } else {
-        // If we can't fetch sessions, treat as no sessions available
-        sessions = [];
-      }
-    } catch {
-      // If sessions API fails, treat as no sessions available
-      sessions = [];
-    }
-  }
-} catch {
-  showServerError = true;
-  serverError = 'Unable to connect to server';
-}
-
-// Determine which component to show based on session count
-const sessionCount = sessions.length;
+// No server-side health checks - everything is handled client-side now
+// This improves loading states and debugging capabilities
 ---
 
 <Layout title="Amnesiac - Blood on the Clocktower">
-  {
-    showServerError ? (
-      <ServerErrorPage errorMessage={serverError} client:load />
-    ) : sessionCount === 0 ? (
-      <NoSessionsView client:load />
-    ) : sessionCount === 1 ? (
-      <ScriptPage sessionData={sessions[0]} client:load />
-    ) : (
-      <SessionList sessions={sessions} client:load />
-    )
-  }
+  <LandingPageLoader client:load />
 </Layout>
