@@ -36,23 +36,40 @@ export const useSessionStore = defineStore('sessions', () => {
     error.value = null;
 
     try {
+      console.log('Fetching sessions from API...');
       const response = await sessionApi.getAllSessions();
-      sessions.value = response as Session[];
+      console.log('API response:', response);
+
+      // Handle the API response format: {success: true, data: Session[]}
+      if (response && typeof response === 'object' && 'data' in response) {
+        sessions.value = (response as any).data as Session[];
+      } else {
+        // Fallback for direct array response
+        sessions.value = response as Session[];
+      }
+
+      console.log('Sessions set to:', sessions.value);
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Unknown error occurred';
       console.error('Error fetching sessions:', err);
     } finally {
       loading.value = false;
     }
-  };
-
-  const createSession = async (sessionData: { name: string; type: string; state?: Record<string, unknown> }) => {
+  };  const createSession = async (sessionData: { name: string; type: string; state?: Record<string, unknown> }) => {
     loading.value = true;
     error.value = null;
 
     try {
       const response = await sessionApi.createSession(sessionData);
-      const newSession = response as Session;
+
+      // Handle the API response format: {success: true, data: Session}
+      let newSession: Session;
+      if (response && typeof response === 'object' && 'data' in response) {
+        newSession = (response as any).data as Session;
+      } else {
+        newSession = response as Session;
+      }
+
       sessions.value.push(newSession);
       return newSession;
     } catch (err) {
@@ -87,7 +104,15 @@ export const useSessionStore = defineStore('sessions', () => {
 
     try {
       const response = await sessionApi.updateSession(sessionId, sessionData);
-      const updatedSession = response as Session;
+
+      // Handle the API response format: {success: true, data: Session}
+      let updatedSession: Session;
+      if (response && typeof response === 'object' && 'data' in response) {
+        updatedSession = (response as any).data as Session;
+      } else {
+        updatedSession = response as Session;
+      }
+
       const index = sessions.value.findIndex(session => session.id === sessionId);
       if (index !== -1) {
         sessions.value[index] = updatedSession;

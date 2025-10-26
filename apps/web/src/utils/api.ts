@@ -20,11 +20,15 @@ export const apiClient = {
   baseUrl: getApiBaseUrl(),
   
   async get<T>(endpoint: string): Promise<T> {
-    const response = await fetch(`${this.baseUrl}${endpoint}`);
+    const url = `${this.baseUrl}${endpoint}`;
+    console.log('API GET request to:', url);
+    const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`API Error: ${response.status} ${response.statusText}`);
     }
-    return response.json();
+    const data = await response.json();
+    console.log('API GET response:', data);
+    return data;
   },
   
   async post<T>(endpoint: string, data: any): Promise<T> {
