@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import sessionRoutes from './sessions';
+import sessionRoutes from './sessions.js';
 
 const router = Router();
 

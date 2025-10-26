@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { sessionService } from '../services/sessionService';
-import { CreateSessionDto, UpdateSessionDto } from '../types/session';
-import { ApiResponse } from '../types/api';
+import { sessionService } from '../services/sessionService.js';
+import { CreateSessionDto, UpdateSessionDto } from '../types/session.js';
+import { ApiResponse } from '../types/api.js';
 
 export class SessionController {
   async createSession(req: Request, res: Response): Promise<void> {

@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Session, CreateSessionDto, UpdateSessionDto } from '../types/session';
+import { Session, CreateSessionDto, UpdateSessionDto } from '../types/session.js';
 
 class SessionService {
   private sessions: Map<string, Session> = new Map();
