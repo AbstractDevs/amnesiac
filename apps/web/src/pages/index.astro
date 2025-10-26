@@ -2,62 +2,106 @@
 import Layout from '../layouts/Layout.astro';
 import ThemeToggle from '../components/ThemeToggle.vue';
 import ScriptSection from '../components/ScriptSection.vue';
-import ApiStatus from '../components/ApiStatus.vue';
+import ServerErrorPage from '../components/ServerErrorPage.vue';
 
-// Fetch the Blood on the Clocktower script data
-const scriptUrl =
-  'https://raw.githubusercontent.com/AbstractDevs/librarian/refs/heads/main/src/data/scripts/rotting-moors/latest.json';
+// Check server health first
+const apiUrl = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
+let serverHealthy = false;
+let serverError = '';
 
-let scriptData: any[] = [];
 try {
-  const response = await fetch(scriptUrl);
-  scriptData = await response.json();
+  const healthResponse = await fetch(`${apiUrl}/health`, {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+    },
+    // Add timeout to prevent hanging
+    signal: AbortSignal.timeout(5000), // 5 second timeout
+  });
+
+  if (healthResponse.ok) {
+    const healthData = await healthResponse.json();
+    serverHealthy = healthData.success === true;
+  } else {
+    serverError = `Server responded with ${healthResponse.status}: ${healthResponse.statusText}`;
+  }
 } catch (error) {
-  console.error('Failed to fetch script data:', error);
+  serverError = error instanceof Error ? error.message : 'Unknown connection error';
+  console.error('Server health check failed:', error);
 }
 
-// Extract meta information
-const scriptMeta = scriptData.find((item) => item.id === '_meta');
-const scriptName = scriptMeta?.name || 'Unknown Script';
-const scriptAuthor = scriptMeta?.author || 'Unknown Author';
+// Only fetch script data if server is healthy
+let scriptData: any[] = [];
+let scriptName = 'Unknown Script';
+let scriptAuthor = 'Unknown Author';
 
-// Placeholder character data (will be replaced with real API data later)
-const placeholderIcon =
-  'https://wiki.bloodontheclocktower.com/images/2/26/Icon_amnesiac.png';
+if (serverHealthy) {
+  // Fetch the Blood on the Clocktower script data
+  const scriptUrl =
+    'https://raw.githubusercontent.com/AbstractDevs/librarian/refs/heads/main/src/data/scripts/rotting-moors/latest.json';
 
-const createPlaceholderCharacter = (
-  id: string,
-  section: 'townsfolk' | 'outsiders' | 'minions' | 'demons'
-) => ({
-  id,
-  name: id.charAt(0).toUpperCase() + id.slice(1),
-  description: `You start knowing 1 good player. Each day, privately guess what it is; you learn how accurate you are.`,
-  icon: placeholderIcon,
-  section,
-});
+  try {
+    const response = await fetch(scriptUrl);
+    scriptData = await response.json();
 
-// Organize characters by section (placeholder implementation)
-const townsfolk = scriptData
-  .filter((item, index) => item !== scriptMeta && index >= 1 && index <= 12)
-  .map((id) => createPlaceholderCharacter(id, 'townsfolk'));
+    // Extract meta information
+    const scriptMeta = scriptData.find((item) => item.id === '_meta');
+    scriptName = scriptMeta?.name || 'Unknown Script';
+    scriptAuthor = scriptMeta?.author || 'Unknown Author';
+  } catch (error) {
+    console.error('Failed to fetch script data:', error);
+  }
+}
 
-const outsiders = scriptData
-  .filter((item, index) => item !== scriptMeta && index >= 13 && index <= 16)
-  .map((id) => createPlaceholderCharacter(id, 'outsiders'));
+// Placeholder character data (only process if server is healthy)
+let townsfolk: any[] = [];
+let outsiders: any[] = [];
+let minions: any[] = [];
+let demons: any[] = [];
 
-const minions = scriptData
-  .filter((item, index) => item !== scriptMeta && index >= 17 && index <= 20)
-  .map((id) => createPlaceholderCharacter(id, 'minions'));
+if (serverHealthy && scriptData.length > 0) {
+  const scriptMeta = scriptData.find((item) => item.id === '_meta');
 
-const demons = scriptData
-  .filter((item, index) => item !== scriptMeta && index >= 21)
-  .map((id) => createPlaceholderCharacter(id, 'demons'));
+  const placeholderIcon =
+    'https://wiki.bloodontheclocktower.com/images/2/26/Icon_amnesiac.png';
+
+  const createPlaceholderCharacter = (
+    id: string,
+    section: 'townsfolk' | 'outsiders' | 'minions' | 'demons'
+  ) => ({
+    id,
+    name: id.charAt(0).toUpperCase() + id.slice(1),
+    description: `You start knowing 1 good player. Each day, privately guess what it is; you learn how accurate you are.`,
+    icon: placeholderIcon,
+    section,
+  });
+
+  // Organize characters by section (placeholder implementation)
+  townsfolk = scriptData
+    .filter((item, index) => item !== scriptMeta && index >= 1 && index <= 12)
+    .map((id) => createPlaceholderCharacter(id, 'townsfolk'));
+
+  outsiders = scriptData
+    .filter((item, index) => item !== scriptMeta && index >= 13 && index <= 16)
+    .map((id) => createPlaceholderCharacter(id, 'outsiders'));
+
+  minions = scriptData
+    .filter((item, index) => item !== scriptMeta && index >= 17 && index <= 20)
+    .map((id) => createPlaceholderCharacter(id, 'minions'));
+
+  demons = scriptData
+    .filter((item, index) => item !== scriptMeta && index >= 21)
+    .map((id) => createPlaceholderCharacter(id, 'demons'));
+}
 ---
 
 <Layout title="Amnesiac - Blood on the Clocktower">
-  <div
-    class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950"
-  >
+  {!serverHealthy ? (
+    <ServerErrorPage errorMessage={serverError} client:load />
+  ) : (
+    <div
+      class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950"
+    >
     <!-- Header -->
     <header
       class="border-b border-gray-200 bg-white/90 backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/90"
@@ -97,9 +141,6 @@ const demons = scriptData
           </div>
         </div>
       </div>
-
-      <!-- API Connection Status (Development Helper) -->
-      <ApiStatus client:load />
 
       <!-- Script Sections -->
       <div class="space-y-12">
@@ -149,4 +190,5 @@ const demons = scriptData
       </div>
     </main>
   </div>
+  )}
 </Layout>
