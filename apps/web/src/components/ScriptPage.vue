@@ -124,6 +124,23 @@ interface Character {
   section: 'townsfolk' | 'outsiders' | 'minions' | 'demons';
 }
 
+interface SessionData {
+  id: string;
+  name: string;
+  startTime: string;
+  lastUpdated: string;
+  type: string;
+  state: Record<string, unknown>;
+}
+
+interface Props {
+  sessionData?: SessionData | null;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  sessionData: null,
+});
+
 // Reactive state
 const loading = ref(true);
 const error = ref<string | null>(null);
@@ -232,6 +249,13 @@ const fetchScript = async () => {
 
 // Load script on component mount
 onMounted(() => {
+  if (props.sessionData) {
+    // If session data is provided, use it to determine script behavior
+    // For now, we'll still fetch the script normally, but we could extend this
+    // to use session state in the future
+    scriptName.value = props.sessionData.name;
+    // TODO: Eventually use session state to determine script data
+  }
   fetchScript();
 });
 </script>

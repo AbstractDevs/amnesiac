@@ -2,23 +2,71 @@
 import Layout from '../layouts/Layout.astro';
 import ServerErrorPage from '../components/ServerErrorPage.vue';
 import ScriptPage from '../components/ScriptPage.vue';
+import SessionList from '../components/SessionList.vue';
+import NoSessionsView from '../components/NoSessionsView.vue';
 
-// Skip server-side health check in production builds
-// Client-side checks will be handled by individual components
-let serverHealthy = true;
+// Check if API server is available
+let showServerError = false;
 let serverError = '';
+let sessions: any[] = [];
 
-// For development, you can uncomment this to test server connectivity:
-// const apiUrl = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
-// console.log("Starting health check for:", apiUrl);
+try {
+  const serverUrl = import.meta.env.PROD
+    ? 'https://206.189.92.179:3000'
+    : 'http://localhost:3000';
+
+  // First check server health
+  const healthResponse = await fetch(`${serverUrl}/health`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+    },
+  });
+
+  if (!healthResponse.ok) {
+    showServerError = true;
+    serverError = 'Server health check failed';
+  } else {
+    // Try to fetch sessions
+    try {
+      const sessionsResponse = await fetch(`${serverUrl}/api/sessions`, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+        },
+      });
+
+      if (sessionsResponse.ok) {
+        const result = await sessionsResponse.json();
+        sessions = result.data || result || [];
+      } else {
+        // If we can't fetch sessions, treat as no sessions available
+        sessions = [];
+      }
+    } catch {
+      // If sessions API fails, treat as no sessions available
+      sessions = [];
+    }
+  }
+} catch {
+  showServerError = true;
+  serverError = 'Unable to connect to server';
+}
+
+// Determine which component to show based on session count
+const sessionCount = sessions.length;
 ---
 
 <Layout title="Amnesiac - Blood on the Clocktower">
   {
-    !serverHealthy ? (
+    showServerError ? (
       <ServerErrorPage errorMessage={serverError} client:load />
+    ) : sessionCount === 0 ? (
+      <NoSessionsView client:load />
+    ) : sessionCount === 1 ? (
+      <ScriptPage sessionData={sessions[0]} client:load />
     ) : (
-      <ScriptPage client:load />
+      <SessionList sessions={sessions} client:load />
     )
   }
 </Layout>

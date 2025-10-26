@@ -1,0 +1,77 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ServerErrorPage from '../../components/ServerErrorPage.vue';
+import ScriptPage from '../../components/ScriptPage.vue';
+
+export async function getStaticPaths() {
+  // For now, we'll return an empty array since we're using SSR-like behavior
+  // In production, you might want to pre-generate some paths
+  return [];
+}
+
+const { sessionId } = Astro.params;
+
+// Check if API server is available
+let showServerError = false;
+let serverError = '';
+let sessionData: any = null;
+
+try {
+  const serverUrl = import.meta.env.PROD
+    ? 'https://206.189.92.179:3000'
+    : 'http://localhost:3000';
+
+  // First check server health
+  const healthResponse = await fetch(`${serverUrl}/health`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+    },
+  });
+
+  if (!healthResponse.ok) {
+    showServerError = true;
+    serverError = 'Server health check failed';
+  } else {
+    // Try to fetch the specific session
+    try {
+      const sessionResponse = await fetch(
+        `${serverUrl}/api/sessions/${sessionId}`,
+        {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+          },
+        }
+      );
+
+      if (sessionResponse.ok) {
+        const result = await sessionResponse.json();
+        sessionData = result.data || result;
+      } else if (sessionResponse.status === 404) {
+        showServerError = true;
+        serverError = 'Session not found';
+      } else {
+        showServerError = true;
+        serverError = `Failed to load session: ${sessionResponse.status}`;
+      }
+    } catch {
+      showServerError = true;
+      serverError = 'Failed to load session data';
+    }
+  }
+} catch {
+  showServerError = true;
+  serverError = 'Unable to connect to server';
+}
+---
+
+<Layout title={`Session ${sessionData?.name || sessionId} - Amnesiac`}>
+  {
+    showServerError ? (
+      <ServerErrorPage errorMessage={serverError} client:load />
+    ) : (
+      <ScriptPage sessionData={sessionData} client:load />
+    )
+  }
+</Layout>
