@@ -7,21 +7,22 @@
     "apps/*",
     "packages/*"
   ],
+  "packageManager": "bun@1.2.4",
   "scripts": {
-    "dev": "npm run dev --workspace=apps/web",
-    "dev:web": "npm run dev --workspace=apps/web",
-    "dev:server": "npm run dev --workspace=apps/server",
-    "dev:all": "concurrently \"npm run dev:web\" \"npm run dev:server\"",
-    "build": "npm run build --workspace=apps/web",
-    "build:web": "npm run build --workspace=apps/web",
-    "build:server": "npm run build --workspace=apps/server",
-    "build:all": "npm run build:web && npm run build:server",
-    "build:shared": "npm run build --workspace=packages/shared",
+    "dev": "cd apps/web && bun run dev",
+    "dev:web": "cd apps/web && bun run dev",
+    "dev:server": "cd apps/server && bun run dev",
+    "dev:all": "concurrently \"bun run dev:web\" \"bun run dev:server\"",
+    "build": "cd apps/web && bun run build",
+    "build:web": "cd apps/web && bun run build",
+    "build:server": "cd apps/server && bun run build",
+    "build:all": "bun run build:web && bun run build:server",
+    "build:shared": "cd packages/shared && bun run build",
     "format": "prettier --check apps/*/src/**/*.{ts,vue,astro} packages/*/src/**/*.ts",
     "format:fix": "prettier --write apps/*/src/**/*.{ts,vue,astro} packages/*/src/**/*.ts",
-    "lint": "npm run lint --workspace=apps/web && npm run lint --workspace=apps/server",
-    "lint:fix": "npm run lint:fix --workspace=apps/web && npm run lint:fix --workspace=apps/server",
-    "test": "npm run test --workspace=apps/web && npm run test --workspace=apps/server",
+    "lint": "cd apps/web && bun run lint && cd ../server && bun run lint",
+    "lint:fix": "cd apps/web && bun run lint:fix && cd ../server && bun run lint:fix",
+    "test": "cd apps/web && bun run test && cd ../server && bun run test",
     "clean": "rm -rf apps/*/node_modules apps/*/dist packages/*/node_modules packages/*/dist node_modules"
   },
   "devDependencies": {
@@ -31,7 +32,7 @@
   },
   "engines": {
     "node": ">=18.0.0",
-    "npm": ">=9.0.0"
+    "bun": ">=1.0.0"
   },
   "repository": {
     "type": "git",
