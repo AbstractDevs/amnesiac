@@ -1,0 +1,50 @@
+{
+  "folders": [
+    {
+      "name": "🌐 Web App",
+      "path": "./apps/web"
+    },
+    {
+      "name": "🖥️ Server",
+      "path": "./apps/server"
+    },
+    {
+      "name": "📦 Packages",
+      "path": "./packages"
+    },
+    {
+      "name": "🏠 Root",
+      "path": "./"
+    }
+  ],
+  "settings": {
+    "typescript.preferences.includePackageJsonAutoImports": "auto",
+    "typescript.workspaceSymbols.scope": "allOpenProjects",
+    "eslint.workingDirectories": [
+      "./apps/web",
+      "./apps/server"
+    ],
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/.astro": true
+    },
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/.git": true,
+      "**/.DS_Store": true,
+      "**/dist": true,
+      "**/.astro": true
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "astro-build.astro-vscode",
+      "vue.volar",
+      "bradlc.vscode-tailwindcss",
+      "esbenp.prettier-vscode",
+      "dbaeumer.vscode-eslint",
+      "ms-vscode.vscode-typescript-next"
+    ]
+  }
+}

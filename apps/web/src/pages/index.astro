@@ -1,0 +1,148 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ThemeToggle from '../components/ThemeToggle.vue';
+import ScriptSection from '../components/ScriptSection.vue';
+
+// Fetch the Blood on the Clocktower script data
+const scriptUrl =
+  'https://raw.githubusercontent.com/AbstractDevs/librarian/refs/heads/main/src/data/scripts/rotting-moors/latest.json';
+
+let scriptData: any[] = [];
+try {
+  const response = await fetch(scriptUrl);
+  scriptData = await response.json();
+} catch (error) {
+  console.error('Failed to fetch script data:', error);
+}
+
+// Extract meta information
+const scriptMeta = scriptData.find((item) => item.id === '_meta');
+const scriptName = scriptMeta?.name || 'Unknown Script';
+const scriptAuthor = scriptMeta?.author || 'Unknown Author';
+
+// Placeholder character data (will be replaced with real API data later)
+const placeholderIcon =
+  'https://wiki.bloodontheclocktower.com/images/2/26/Icon_amnesiac.png';
+
+const createPlaceholderCharacter = (
+  id: string,
+  section: 'townsfolk' | 'outsiders' | 'minions' | 'demons'
+) => ({
+  id,
+  name: id.charAt(0).toUpperCase() + id.slice(1),
+  description: `You start knowing 1 good player. Each day, privately guess what it is; you learn how accurate you are.`,
+  icon: placeholderIcon,
+  section,
+});
+
+// Organize characters by section (placeholder implementation)
+const townsfolk = scriptData
+  .filter((item, index) => item !== scriptMeta && index >= 1 && index <= 12)
+  .map((id) => createPlaceholderCharacter(id, 'townsfolk'));
+
+const outsiders = scriptData
+  .filter((item, index) => item !== scriptMeta && index >= 13 && index <= 16)
+  .map((id) => createPlaceholderCharacter(id, 'outsiders'));
+
+const minions = scriptData
+  .filter((item, index) => item !== scriptMeta && index >= 17 && index <= 20)
+  .map((id) => createPlaceholderCharacter(id, 'minions'));
+
+const demons = scriptData
+  .filter((item, index) => item !== scriptMeta && index >= 21)
+  .map((id) => createPlaceholderCharacter(id, 'demons'));
+---
+
+<Layout title="Amnesiac - Blood on the Clocktower">
+  <div
+    class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950"
+  >
+    <!-- Header -->
+    <header
+      class="border-b border-gray-200 bg-white/90 backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/90"
+    >
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="flex h-16 items-center justify-between">
+          <div class="flex items-center">
+            <h1 class="text-2xl font-bold text-red-600 dark:text-red-400">
+              Amnesiac
+            </h1>
+            <span class="ml-2 text-sm text-gray-600 dark:text-gray-300">
+              Blood on the Clocktower
+            </span>
+          </div>
+          <ThemeToggle client:load />
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <!-- Script Header -->
+      <div class="mb-8 text-center">
+        <h1
+          class="text-4xl font-bold text-gray-900 dark:text-gray-100 md:text-5xl"
+        >
+          {scriptName}
+        </h1>
+        <p class="mt-2 text-lg text-gray-600 dark:text-gray-400">
+          by {scriptAuthor}
+        </p>
+        <div class="mt-4 flex justify-center">
+          <div class="rounded-lg bg-red-100 px-4 py-2 dark:bg-red-900/30">
+            <span class="text-sm font-medium text-red-800 dark:text-red-200">
+              {scriptData.length - 1} Total Characters
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Script Sections -->
+      <div class="space-y-12">
+        {/* Townsfolk Section */}
+        {
+          townsfolk.length > 0 && (
+            <ScriptSection
+              sectionType="townsfolk"
+              characters={townsfolk}
+              client:load
+            />
+          )
+        }
+
+        {/* Outsiders Section */}
+        {
+          outsiders.length > 0 && (
+            <ScriptSection
+              sectionType="outsiders"
+              characters={outsiders}
+              client:load
+            />
+          )
+        }
+
+        {/* Minions Section */}
+        {
+          minions.length > 0 && (
+            <ScriptSection
+              sectionType="minions"
+              characters={minions}
+              client:load
+            />
+          )
+        }
+
+        {/* Demons Section */}
+        {
+          demons.length > 0 && (
+            <ScriptSection
+              sectionType="demons"
+              characters={demons}
+              client:load
+            />
+          )
+        }
+      </div>
+    </main>
+  </div>
+</Layout>

@@ -1,81 +1,105 @@
 # Amnesiac
 
-A Progressive Web App for Blood on the Clocktower players, built with Astro, TypeScript, and Vue.
+A comprehensive Blood on the Clocktower session management system consisting of a Progressive Web App and REST API server.
 
-## Requirements
+## Projects
 
-- **Bun** 1.2+ (recommended) or Node.js 18+
-- Modern web browser with PWA support
+### 🌐 Web App (`apps/web`)
+- **Framework**: Astro 5.x with Vue 3.x components
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS with dark/light mode
+- **Deployment**: GitHub Pages
+- **Purpose**: Player-facing PWA for viewing scripts and game state
 
-## Features
+### 🖥️ Server (`apps/server`)
+- **Framework**: Node.js with Express
+- **Language**: TypeScript
+- **Runtime**: Bun for enhanced performance
+- **Deployment**: DigitalOcean Droplet via GitHub Actions
+- **Purpose**: Session management and real-time state synchronization
 
-- 🎭 Display Blood on the Clocktower game scripts
-- 📱 Progressive Web App with offline support
-- 🌙 Dark theme optimized for gameplay
-- 🚀 Fast static site generation with Astro
+### 📦 Shared (`packages/shared`)
+- **Purpose**: Common types and utilities used across web and server
+- **Language**: TypeScript
 
 ## Development
 
+### Prerequisites
+- **Bun** 1.2+ (recommended package manager and runtime)
+- Node.js >= 18.0.0 (fallback compatibility)
+
+### Setup
 ```bash
-# Install dependencies
+# Install all dependencies
 bun install
 
-# Start development server
-bun run dev
+# Start both projects in development mode
+bun run dev:all
 
-# Build for production
-bun run build
+# Or start individually
+bun run dev:web    # Web app on http://localhost:4321/amnesiac
+bun run dev:server # API server on http://localhost:3000
+```
 
-# Preview production build
-bun run preview
+### Available Scripts
+```bash
+# Development
+bun run dev:web        # Start web app only
+bun run dev:server     # Start server only
+bun run dev:all        # Start both concurrently
+
+# Building
+bun run build:web      # Build web app for production
+bun run build:server   # Build server for production
+bun run build:all      # Build both projects
+bun run build:shared   # Build shared package
+
+# Code Quality
+bun run format         # Check code formatting
+bun run format:fix     # Fix code formatting
+bun run lint          # Check for linting issues
+bun run lint:fix      # Fix linting issues
+
+# Utilities
+bun run clean         # Remove all node_modules and dist folders
 ```
 
 ## Deployment
 
-Automatically deploys to GitHub Pages on push to main branch.
+### Web App (GitHub Pages)
+The web app automatically deploys to GitHub Pages on pushes to `main` branch.
+- URL: `https://abstractdevs.github.io/amnesiac/`
+- Build artifacts from `apps/web/dist`
 
-## Current Script
+### Server (DigitalOcean)
+The server deploys to a DigitalOcean droplet via GitHub Actions.
+- Triggered on changes to `apps/server/` directory
+- Environment variables managed via GitHub Secrets
+- Docker containerization for consistent deployment
 
-Displays the "Rotting Moors" script by Patters from the AbstractDevs/librarian repository.
+## Architecture
 
-```sh
-npm create astro@latest -- --template minimal
+### Session Management
+- **Session Types**: Currently supports "SCRIPT" type
+- **State Management**: Flexible schema based on session type
+- **Real-time Sync**: WebSocket connections for live updates
+- **CRUD Operations**: Full session lifecycle management
+
+### Data Flow
+```
+Player Device (PWA) ←→ API Server ←→ Database
+                    ↕
+            Other Connected Clients
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Contributing
 
-## 🚀 Project Structure
+1. Make changes in appropriate `apps/*` directory
+2. Run `bun run format:fix` and `bun run lint:fix`
+3. Test changes locally with `bun run dev:all`
+4. Commit with conventional commit format
+5. Push to trigger appropriate deployment pipeline
 
-Inside of your Astro project, you'll see the following folders and files:
+## License
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
-
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+MIT License - see LICENSE file for details.
