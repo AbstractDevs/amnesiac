@@ -24,7 +24,10 @@
     <ServerErrorPage v-else-if="showServerError" :errorMessage="serverError" />
 
     <!-- No Sessions -->
-    <NoSessionsView v-else-if="sessionCount === 0" />
+    <NoSessionsView
+      v-else-if="sessionCount === 0"
+      @recheckSessions="recheckSessions"
+    />
 
     <!-- Single Session -->
     <ScriptPage v-else-if="sessionCount === 1" :sessionData="sessions[0]" />
@@ -180,6 +183,19 @@ const initialize = async () => {
         : 'Unexpected error during initialization';
   } finally {
     loading.value = false;
+  }
+};
+
+// Recheck sessions when called from NoSessionsView
+const recheckSessions = async () => {
+  // Only fetch sessions, skip health check since we already know server is healthy
+  try {
+    const sessionData = await fetchSessions();
+    sessions.value = sessionData;
+    sessionCount.value = sessionData.length;
+  } catch (err) {
+    console.warn('Failed to recheck sessions:', err);
+    // Don't set error state here, just continue polling
   }
 };
 
