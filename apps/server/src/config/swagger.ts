@@ -210,7 +210,8 @@ export const setupSwagger = (app: Express): void => {
   });
 
   // Apply relaxed CSP only to Swagger routes
-  app.use('/api-docs*', swaggerCSP);
+  app.use('/api-docs/*', swaggerCSP);
+  app.use('/api-docs', swaggerCSP);
 
   // Swagger UI setup
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, {
