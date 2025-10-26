@@ -16,17 +16,18 @@ const PORT = Number(process.env.PORT) || 3000;
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
-      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-      "script-src": [
-        "'self'",
-        "'unsafe-inline'",
-        "'unsafe-eval'",
-      ],
-      "style-src": ["'self'", "'unsafe-inline'"],
-      "img-src": ["'self'", "data:", "https:"],
-      "font-src": ["'self'", "https:", "data:"],
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:", "http:"],
+      fontSrc: ["'self'", "https:", "data:", "http:"],
+      connectSrc: ["'self'", "http:", "https:"],
+      // Explicitly disable upgrade-insecure-requests for HTTP-only server
+      upgradeInsecureRequests: null,
     },
   },
+  // Disable HSTS to prevent HTTPS upgrade for development/HTTP-only servers
+  hsts: false,
 })); // Security headers with Swagger UI compatibility
 app.use(cors()); // Enable CORS
 app.use(morgan('combined')); // Request logging
