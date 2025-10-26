@@ -60,9 +60,11 @@ const sessionCount = ref(0);
 
 // Get server URL based on environment
 const getServerUrl = () => {
-  return import.meta.env.PROD
-    ? 'https://206.189.92.179:3000'
-    : 'http://localhost:3000';
+  return import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
+};
+
+const getApiBaseUrl = () => {
+  return import.meta.env.PUBLIC_API_BASE_URL || 'http://localhost:3000/api';
 };
 
 // Health check with timeout
@@ -109,12 +111,12 @@ const performHealthCheck = async (): Promise<boolean> => {
 const fetchSessions = async (): Promise<Session[]> => {
   try {
     loadingMessage.value = 'Loading sessions...';
-    const serverUrl = getServerUrl();
+    const apiBaseUrl = getApiBaseUrl();
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
-    const sessionsResponse = await fetch(`${serverUrl}/api/sessions`, {
+    const sessionsResponse = await fetch(`${apiBaseUrl}/sessions`, {
       method: 'GET',
       headers: {
         Accept: 'application/json',
