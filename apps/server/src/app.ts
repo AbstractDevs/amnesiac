@@ -1,5 +1,4 @@
 import express from 'express';
-import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
@@ -29,7 +28,6 @@ app.use(helmet({
   // Disable HSTS to prevent HTTPS upgrade for development/HTTP-only servers
   hsts: false,
 })); // Security headers with Swagger UI compatibility
-app.use(cors()); // Enable CORS
 app.use(morgan('combined')); // Request logging
 app.use(express.json()); // Parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies// Routes
