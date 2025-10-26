@@ -10,6 +10,11 @@
             src="https://wiki.bloodontheclocktower.com/images/2/26/Icon_amnesiac.png"
             alt="Amnesiac Icon"
             class="mx-auto h-96 w-96 opacity-70 dark:opacity-50"
+            style="
+              object-fit: cover;
+              object-position: center;
+              clip-path: inset(15% 15% 15% 15%);
+            "
           />
         </div>
 
@@ -88,6 +93,7 @@ const startPolling = () => {
 
 // Reset polling (called from parent when this component is shown again)
 const resetPolling = () => {
+  cleanup(); // Ensure any existing intervals are cleared first
   startPolling();
 };
 
