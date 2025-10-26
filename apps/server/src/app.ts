@@ -17,9 +17,7 @@ app.use(helmet()); // Security headers
 app.use(cors()); // Enable CORS
 app.use(morgan('combined')); // Request logging
 app.use(express.json()); // Parse JSON bodies
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
-
-// Routes
+app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies// Routes
 app.use(routes);
 
 // Setup Swagger documentation

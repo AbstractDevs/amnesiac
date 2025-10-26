@@ -1,5 +1,6 @@
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+import helmet from 'helmet';
 import { Express } from 'express';
 
 const options: swaggerJSDoc.Options = {
@@ -192,6 +193,25 @@ const options: swaggerJSDoc.Options = {
 const specs = swaggerJSDoc(options);
 
 export const setupSwagger = (app: Express): void => {
+  // Relaxed CSP middleware specifically for Swagger UI routes
+  const swaggerCSP = helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: [
+        "'self'", 
+        "'unsafe-inline'", 
+        "'unsafe-eval'",
+        "'sha256-ieoeWczDHkReVBsRBqaal5AFMlBtNjMzgwKvLqi/tSU='"
+      ],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+      fontSrc: ["'self'", "https:", "data:"],
+    },
+  });
+
+  // Apply relaxed CSP only to Swagger routes
+  app.use('/api-docs*', swaggerCSP);
+  
   // Swagger UI setup
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, {
     explorer: true,
