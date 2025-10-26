@@ -1,7 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import ScriptSection from '../components/ScriptSection.vue';
 import ServerErrorPage from '../components/ServerErrorPage.vue';
+import ScriptPage from '../components/ScriptPage.vue';
 
 // Skip server-side health check in production builds
 // Client-side checks will be handled by individual components
@@ -11,147 +11,14 @@ let serverError = '';
 // For development, you can uncomment this to test server connectivity:
 // const apiUrl = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
 // console.log("Starting health check for:", apiUrl);
-
-// Only fetch script data if server is healthy
-let scriptData: any[] = [];
-let scriptName = 'Unknown Script';
-let scriptAuthor = 'Unknown Author';
-
-if (serverHealthy) {
-  // Fetch the Blood on the Clocktower script data
-  const scriptUrl =
-    'https://raw.githubusercontent.com/AbstractDevs/librarian/refs/heads/main/src/data/scripts/rotting-moors/latest.json';
-
-  try {
-    const response = await fetch(scriptUrl);
-    scriptData = await response.json();
-
-    // Extract meta information
-    const scriptMeta = scriptData.find((item) => item.id === '_meta');
-    scriptName = scriptMeta?.name || 'Unknown Script';
-    scriptAuthor = scriptMeta?.author || 'Unknown Author';
-  } catch (error) {
-    console.error('Failed to fetch script data:', error);
-  }
-}
-
-// Placeholder character data (only process if server is healthy)
-let townsfolk: any[] = [];
-let outsiders: any[] = [];
-let minions: any[] = [];
-let demons: any[] = [];
-
-if (serverHealthy && scriptData.length > 0) {
-  const scriptMeta = scriptData.find((item) => item.id === '_meta');
-
-  const placeholderIcon =
-    'https://wiki.bloodontheclocktower.com/images/2/26/Icon_amnesiac.png';
-
-  const createPlaceholderCharacter = (
-    id: string,
-    section: 'townsfolk' | 'outsiders' | 'minions' | 'demons'
-  ) => ({
-    id,
-    name: id.charAt(0).toUpperCase() + id.slice(1),
-    description: `You start knowing 1 good player. Each day, privately guess what it is; you learn how accurate you are.`,
-    icon: placeholderIcon,
-    section,
-  });
-
-  // Organize characters by section (placeholder implementation)
-  townsfolk = scriptData
-    .filter((item, index) => item !== scriptMeta && index >= 1 && index <= 12)
-    .map((id) => createPlaceholderCharacter(id, 'townsfolk'));
-
-  outsiders = scriptData
-    .filter((item, index) => item !== scriptMeta && index >= 13 && index <= 16)
-    .map((id) => createPlaceholderCharacter(id, 'outsiders'));
-
-  minions = scriptData
-    .filter((item, index) => item !== scriptMeta && index >= 17 && index <= 20)
-    .map((id) => createPlaceholderCharacter(id, 'minions'));
-
-  demons = scriptData
-    .filter((item, index) => item !== scriptMeta && index >= 21)
-    .map((id) => createPlaceholderCharacter(id, 'demons'));
-}
 ---
 
 <Layout title="Amnesiac - Blood on the Clocktower">
-  {!serverHealthy ? (
-    <ServerErrorPage errorMessage={serverError} client:load />
-  ) : (
-    <div
-      class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950"
-    >
-    <!-- Main Content -->
-    <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <!-- Script Header -->
-      <div class="mb-8 text-center">
-        <h1
-          class="text-4xl font-bold text-gray-900 dark:text-gray-100 md:text-5xl"
-        >
-          {scriptName}
-        </h1>
-        <p class="mt-2 text-lg text-gray-600 dark:text-gray-400">
-          by {scriptAuthor}
-        </p>
-        <div class="mt-4 flex justify-center">
-          <div class="rounded-lg bg-red-100 px-4 py-2 dark:bg-red-900/30">
-            <span class="text-sm font-medium text-red-800 dark:text-red-200">
-              {scriptData.length - 1} Total Characters
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Script Sections -->
-      <div class="space-y-12">
-        {/* Townsfolk Section */}
-        {
-          townsfolk.length > 0 && (
-            <ScriptSection
-              sectionType="townsfolk"
-              characters={townsfolk}
-              client:load
-            />
-          )
-        }
-
-        {/* Outsiders Section */}
-        {
-          outsiders.length > 0 && (
-            <ScriptSection
-              sectionType="outsiders"
-              characters={outsiders}
-              client:load
-            />
-          )
-        }
-
-        {/* Minions Section */}
-        {
-          minions.length > 0 && (
-            <ScriptSection
-              sectionType="minions"
-              characters={minions}
-              client:load
-            />
-          )
-        }
-
-        {/* Demons Section */}
-        {
-          demons.length > 0 && (
-            <ScriptSection
-              sectionType="demons"
-              characters={demons}
-              client:load
-            />
-          )
-        }
-      </div>
-    </main>
-  </div>
-  )}
+  {
+    !serverHealthy ? (
+      <ServerErrorPage errorMessage={serverError} client:load />
+    ) : (
+      <ScriptPage client:load />
+    )
+  }
 </Layout>
