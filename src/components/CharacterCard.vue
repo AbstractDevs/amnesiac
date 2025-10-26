@@ -20,7 +20,7 @@
       >
         {{ character.name }}
       </h3>
-      <p class="mt-1 text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+      <p class="mt-1 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
         {{ character.description }}
       </p>
     </div>

@@ -21,9 +21,13 @@ const scriptName = scriptMeta?.name || 'Unknown Script';
 const scriptAuthor = scriptMeta?.author || 'Unknown Author';
 
 // Placeholder character data (will be replaced with real API data later)
-const placeholderIcon = 'https://wiki.bloodontheclocktower.com/images/2/26/Icon_amnesiac.png';
+const placeholderIcon =
+  'https://wiki.bloodontheclocktower.com/images/2/26/Icon_amnesiac.png';
 
-const createPlaceholderCharacter = (id: string, section: 'townsfolk' | 'outsiders' | 'minions' | 'demons') => ({
+const createPlaceholderCharacter = (
+  id: string,
+  section: 'townsfolk' | 'outsiders' | 'minions' | 'demons'
+) => ({
   id,
   name: id.charAt(0).toUpperCase() + id.slice(1),
   description: `You start knowing 1 good player. Each day, privately guess what it is; you learn how accurate you are.`,
@@ -32,16 +36,20 @@ const createPlaceholderCharacter = (id: string, section: 'townsfolk' | 'outsider
 });
 
 // Organize characters by section (placeholder implementation)
-const townsfolk = scriptData.filter((item, index) => item !== scriptMeta && index >= 1 && index <= 12)
+const townsfolk = scriptData
+  .filter((item, index) => item !== scriptMeta && index >= 1 && index <= 12)
   .map((id) => createPlaceholderCharacter(id, 'townsfolk'));
 
-const outsiders = scriptData.filter((item, index) => item !== scriptMeta && index >= 13 && index <= 16)
+const outsiders = scriptData
+  .filter((item, index) => item !== scriptMeta && index >= 13 && index <= 16)
   .map((id) => createPlaceholderCharacter(id, 'outsiders'));
 
-const minions = scriptData.filter((item, index) => item !== scriptMeta && index >= 17 && index <= 20)
+const minions = scriptData
+  .filter((item, index) => item !== scriptMeta && index >= 17 && index <= 20)
   .map((id) => createPlaceholderCharacter(id, 'minions'));
 
-const demons = scriptData.filter((item, index) => item !== scriptMeta && index >= 21)
+const demons = scriptData
+  .filter((item, index) => item !== scriptMeta && index >= 21)
   .map((id) => createPlaceholderCharacter(id, 'demons'));
 ---
 
@@ -72,7 +80,9 @@ const demons = scriptData.filter((item, index) => item !== scriptMeta && index >
     <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <!-- Script Header -->
       <div class="mb-8 text-center">
-        <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100 md:text-5xl">
+        <h1
+          class="text-4xl font-bold text-gray-900 dark:text-gray-100 md:text-5xl"
+        >
           {scriptName}
         </h1>
         <p class="mt-2 text-lg text-gray-600 dark:text-gray-400">
@@ -90,40 +100,48 @@ const demons = scriptData.filter((item, index) => item !== scriptMeta && index >
       <!-- Script Sections -->
       <div class="space-y-12">
         {/* Townsfolk Section */}
-        {townsfolk.length > 0 && (
-          <ScriptSection 
-            sectionType="townsfolk" 
-            characters={townsfolk} 
-            client:load 
-          />
-        )}
+        {
+          townsfolk.length > 0 && (
+            <ScriptSection
+              sectionType="townsfolk"
+              characters={townsfolk}
+              client:load
+            />
+          )
+        }
 
         {/* Outsiders Section */}
-        {outsiders.length > 0 && (
-          <ScriptSection 
-            sectionType="outsiders" 
-            characters={outsiders} 
-            client:load 
-          />
-        )}
+        {
+          outsiders.length > 0 && (
+            <ScriptSection
+              sectionType="outsiders"
+              characters={outsiders}
+              client:load
+            />
+          )
+        }
 
         {/* Minions Section */}
-        {minions.length > 0 && (
-          <ScriptSection 
-            sectionType="minions" 
-            characters={minions} 
-            client:load 
-          />
-        )}
+        {
+          minions.length > 0 && (
+            <ScriptSection
+              sectionType="minions"
+              characters={minions}
+              client:load
+            />
+          )
+        }
 
         {/* Demons Section */}
-        {demons.length > 0 && (
-          <ScriptSection 
-            sectionType="demons" 
-            characters={demons} 
-            client:load 
-          />
-        )}
+        {
+          demons.length > 0 && (
+            <ScriptSection
+              sectionType="demons"
+              characters={demons}
+              client:load
+            />
+          )
+        }
       </div>
     </main>
   </div>

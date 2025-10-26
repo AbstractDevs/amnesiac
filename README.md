@@ -2,6 +2,11 @@
 
 A Progressive Web App for Blood on the Clocktower players, built with Astro, TypeScript, and Vue.
 
+## Requirements
+
+- **Bun** 1.2+ (recommended) or Node.js 18+
+- Modern web browser with PWA support
+
 ## Features
 
 - 🎭 Display Blood on the Clocktower game scripts
@@ -13,16 +18,16 @@ A Progressive Web App for Blood on the Clocktower players, built with Astro, Typ
 
 ```bash
 # Install dependencies
-npm install
+bun install
 
 # Start development server
-npm run dev
+bun run dev
 
 # Build for production
-npm run build
+bun run build
 
 # Preview production build
-npm run preview
+bun run preview
 ```
 
 ## Deployment

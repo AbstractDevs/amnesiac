@@ -9,7 +9,9 @@
         {{ sectionTitle }}
       </h2>
       <p class="text-sm text-gray-500 dark:text-gray-400">
-        {{ characters.length }} character{{ characters.length === 1 ? '' : 's' }}
+        {{ characters.length }} character{{
+          characters.length === 1 ? '' : 's'
+        }}
       </p>
     </div>
 
