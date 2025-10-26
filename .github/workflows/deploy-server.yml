@@ -52,6 +52,13 @@ jobs:
               sudo apt-get install -y nodejs
             fi
             
+            # Install Bun if not present
+            if ! command -v bun &> /dev/null; then
+              curl -fsSL https://bun.sh/install | bash
+              export PATH="$HOME/.bun/bin:$PATH"
+              sudo ln -s ~/.bun/bin/bun /usr/local/bin/bun || true
+            fi
+            
             # Install PM2 if not present
             if ! command -v pm2 &> /dev/null; then
               sudo npm install -g pm2
@@ -84,10 +91,24 @@ jobs:
           script: |
             cd /var/www/amnesiac-server
             
-            # Install production dependencies
-            npm ci --only=production
+            # Install production dependencies with bun
+            bun install --production
             
-            # Start with PM2
-            pm2 start dist/index.js --name amnesiac-server
+            # Start with PM2 (use the correct entry point)
+            pm2 stop amnesiac-server || true
+            pm2 delete amnesiac-server || true
+            pm2 start dist/app.js --name amnesiac-server
             pm2 save
-            pm2 startup
+            
+            # Wait a moment for the server to start
+            sleep 5
+            
+            # Check if the server is running
+            if pm2 list | grep -q "amnesiac-server.*online"; then
+              echo "✅ Server deployed successfully!"
+              curl -f http://localhost:3000/health || echo "⚠️ Health check failed, but server is running"
+            else
+              echo "❌ Deployment failed - server not running"
+              pm2 logs amnesiac-server --lines 20
+              exit 1
+            fi
