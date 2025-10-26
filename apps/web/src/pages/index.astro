@@ -3,31 +3,14 @@ import Layout from '../layouts/Layout.astro';
 import ScriptSection from '../components/ScriptSection.vue';
 import ServerErrorPage from '../components/ServerErrorPage.vue';
 
-// Check server health first
-const apiUrl = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
-let serverHealthy = false;
+// Skip server-side health check in production builds
+// Client-side checks will be handled by individual components
+let serverHealthy = true;
 let serverError = '';
 
-try {
-  const healthResponse = await fetch(`${apiUrl}/health`, {
-    method: 'GET',
-    headers: {
-      'Accept': 'application/json',
-    },
-    // Add timeout to prevent hanging
-    signal: AbortSignal.timeout(5000), // 5 second timeout
-  });
-
-  if (healthResponse.ok) {
-    const healthData = await healthResponse.json();
-    serverHealthy = healthData.success === true;
-  } else {
-    serverError = `Server responded with ${healthResponse.status}: ${healthResponse.statusText}`;
-  }
-} catch (error) {
-  serverError = error instanceof Error ? error.message : 'Unknown connection error';
-  console.error('Server health check failed:', error);
-}
+// For development, you can uncomment this to test server connectivity:
+// const apiUrl = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
+// console.log("Starting health check for:", apiUrl);
 
 // Only fetch script data if server is healthy
 let scriptData: any[] = [];
