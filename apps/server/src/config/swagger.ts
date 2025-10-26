@@ -1,6 +1,12 @@
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { Express } from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Get current directory for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const options: swaggerJSDoc.Options = {
   definition: {
@@ -184,8 +190,12 @@ const options: swaggerJSDoc.Options = {
     },
   },
   apis: [
-    './src/routes/*.ts',
-    './src/controllers/*.ts',
+    // Use absolute paths to ensure files are found
+    path.join(__dirname, '../routes/*.js'),
+    path.join(__dirname, '../controllers/*.js'),
+    // Also include TypeScript files for development
+    path.join(__dirname, '../routes/*.ts'),
+    path.join(__dirname, '../controllers/*.ts'),
   ],
 };
 
