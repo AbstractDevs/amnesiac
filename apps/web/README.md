@@ -10,7 +10,8 @@ A Progressive Web App for Blood on the Clocktower players, built with Astro, Typ
 ## Live Demo
 
 - **Production**: <https://abstractdevs.github.io/amnesiac/>
-- **API Documentation**: <http://64.225.49.223:3000/api-docs>
+- **API Documentation**: <https://64.225.49.223/api-docs>
+- **Admin Dashboard**: <https://abstractdevs.github.io/amnesiac/admin>
 
 ## Features
 
