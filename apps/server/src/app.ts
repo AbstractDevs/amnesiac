@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import routes from './routes/index.js';
+import { setupSwagger } from './config/swagger.js';
 
 // Load environment variables
 dotenv.config();
@@ -21,6 +22,9 @@ app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 // Routes
 app.use(routes);
 
+// Setup Swagger documentation
+setupSwagger(app);
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({
@@ -32,7 +36,7 @@ app.use((req, res) => {
 // Error handler
 app.use(
   (
-    err: any,
+    err: Error,
     req: express.Request,
     res: express.Response,
     _next: express.NextFunction

@@ -14,6 +14,7 @@ A TypeScript REST API server for managing Blood on the Clocktower game sessions 
 - **TypeScript**: Full type safety and modern development experience
 - **RESTful API**: Clean, predictable API endpoints
 - **Real-time Ready**: Built for future WebSocket integration
+- **API Documentation**: Interactive Swagger/OpenAPI documentation
 
 ## Quick Start
 
@@ -40,7 +41,27 @@ bun start
 
 ## API Endpoints
 
-### Sessions
+### Interactive Documentation
+
+Access the interactive Swagger documentation at:
+
+- **Development**: `http://localhost:3000/api-docs`
+- **Production**: `http://64.225.49.223:3001/api-docs`
+
+The Swagger UI provides:
+
+- Complete API documentation with request/response schemas
+- Interactive testing of all endpoints
+- Example requests and responses
+- Authentication details (when implemented)
+
+### Quick Reference
+
+#### Health Check
+
+- `GET /health` - Server health status
+
+#### Sessions
 
 - `POST /api/sessions` - Create a new session
 - `GET /api/sessions` - Get all sessions
@@ -48,10 +69,6 @@ bun start
 - `PUT /api/sessions/:id` - Update a session
 - `DELETE /api/sessions/:id` - Delete a session
 - `PATCH /api/sessions/:id/state` - Update session state
-
-### Health Check
-
-- `GET /health` - Server health status
 
 ## Session Schema
 
