@@ -14,7 +14,8 @@ const options: swaggerJSDoc.Options = {
     info: {
       title: 'Amnesiac API',
       version: '1.0.0',
-      description: 'REST API for managing Blood on the Clocktower game sessions',
+      description:
+        'REST API for managing Blood on the Clocktower game sessions',
       contact: {
         name: 'AbstractDevs',
         url: 'https://github.com/AbstractDevs/amnesiac',
@@ -203,11 +204,15 @@ const specs = swaggerJSDoc(options);
 
 export const setupSwagger = (app: Express): void => {
   // Swagger UI setup
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, {
-    explorer: true,
-    customCss: '.swagger-ui .topbar { display: none }',
-    customSiteTitle: 'Amnesiac API Documentation',
-  }));
+  app.use(
+    '/api-docs',
+    swaggerUi.serve,
+    swaggerUi.setup(specs, {
+      explorer: true,
+      customCss: '.swagger-ui .topbar { display: none }',
+      customSiteTitle: 'Amnesiac API Documentation',
+    })
+  );
 
   // Raw OpenAPI JSON
   app.get('/api-docs.json', (req, res) => {

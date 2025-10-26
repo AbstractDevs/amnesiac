@@ -47,14 +47,19 @@ const { title, description = 'Blood on the Clocktower companion app' } =
     class="h-full bg-white text-gray-900 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100"
   >
     <header class="border-b border-gray-200 dark:border-gray-700">
-      <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
+      <nav
+        class="container mx-auto flex items-center justify-between px-4 py-4"
+      >
         <div class="flex items-center space-x-8">
           <h1 class="text-xl font-bold">
-            <a href={`${import.meta.env.BASE_URL}`} class="hover:text-blue-600 dark:hover:text-blue-400">
+            <a
+              href={`${import.meta.env.BASE_URL}`}
+              class="hover:text-blue-600 dark:hover:text-blue-400"
+            >
               Amnesiac
             </a>
           </h1>
-          <div class="hidden md:flex space-x-6">
+          <div class="hidden space-x-6 md:flex">
             <a
               href={`${import.meta.env.BASE_URL}`}
               class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"

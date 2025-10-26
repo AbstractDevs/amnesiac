@@ -21,7 +21,7 @@ export const useSessionStore = defineStore('sessions', () => {
   const sessionCount = computed(() => sessions.value.length);
   const sessionsByType = computed(() => {
     const grouped: Record<string, Session[]> = {};
-    sessions.value.forEach(session => {
+    sessions.value.forEach((session) => {
       if (!grouped[session.type]) {
         grouped[session.type] = [];
       }
@@ -42,7 +42,7 @@ export const useSessionStore = defineStore('sessions', () => {
 
       // Handle the API response format: {success: true, data: Session[]}
       if (response && typeof response === 'object' && 'data' in response) {
-        sessions.value = (response as {data: Session[]}).data;
+        sessions.value = (response as { data: Session[] }).data;
       } else {
         // Fallback for direct array response
         sessions.value = response as Session[];
@@ -50,12 +50,18 @@ export const useSessionStore = defineStore('sessions', () => {
 
       console.log('Sessions set to:', sessions.value);
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Unknown error occurred';
+      error.value =
+        err instanceof Error ? err.message : 'Unknown error occurred';
       console.error('Error fetching sessions:', err);
     } finally {
       loading.value = false;
     }
-  };  const createSession = async (sessionData: { name: string; type: string; state?: Record<string, unknown> }) => {
+  };
+  const createSession = async (sessionData: {
+    name: string;
+    type: string;
+    state?: Record<string, unknown>;
+  }) => {
     loading.value = true;
     error.value = null;
 
@@ -65,7 +71,7 @@ export const useSessionStore = defineStore('sessions', () => {
       // Handle the API response format: {success: true, data: Session}
       let newSession: Session;
       if (response && typeof response === 'object' && 'data' in response) {
-        newSession = (response as {data: Session}).data;
+        newSession = (response as { data: Session }).data;
       } else {
         newSession = response as Session;
       }
@@ -73,7 +79,8 @@ export const useSessionStore = defineStore('sessions', () => {
       sessions.value.push(newSession);
       return newSession;
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Unknown error occurred';
+      error.value =
+        err instanceof Error ? err.message : 'Unknown error occurred';
       console.error('Error creating session:', err);
       return null;
     } finally {
@@ -87,10 +94,13 @@ export const useSessionStore = defineStore('sessions', () => {
 
     try {
       await sessionApi.deleteSession(sessionId);
-      sessions.value = sessions.value.filter(session => session.id !== sessionId);
+      sessions.value = sessions.value.filter(
+        (session) => session.id !== sessionId
+      );
       return true;
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Unknown error occurred';
+      error.value =
+        err instanceof Error ? err.message : 'Unknown error occurred';
       console.error('Error deleting session:', err);
       return false;
     } finally {
@@ -98,7 +108,10 @@ export const useSessionStore = defineStore('sessions', () => {
     }
   };
 
-  const updateSession = async (sessionId: string, sessionData: Partial<Session>) => {
+  const updateSession = async (
+    sessionId: string,
+    sessionData: Partial<Session>
+  ) => {
     loading.value = true;
     error.value = null;
 
@@ -108,18 +121,21 @@ export const useSessionStore = defineStore('sessions', () => {
       // Handle the API response format: {success: true, data: Session}
       let updatedSession: Session;
       if (response && typeof response === 'object' && 'data' in response) {
-        updatedSession = (response as {data: Session}).data;
+        updatedSession = (response as { data: Session }).data;
       } else {
         updatedSession = response as Session;
       }
 
-      const index = sessions.value.findIndex(session => session.id === sessionId);
+      const index = sessions.value.findIndex(
+        (session) => session.id === sessionId
+      );
       if (index !== -1) {
         sessions.value[index] = updatedSession;
       }
       return updatedSession;
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Unknown error occurred';
+      error.value =
+        err instanceof Error ? err.message : 'Unknown error occurred';
       console.error('Error updating session:', err);
       return null;
     } finally {

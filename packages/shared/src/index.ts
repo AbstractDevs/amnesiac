@@ -10,6 +10,8 @@ export const getCurrentTimestamp = (): Date => {
   return new Date();
 };
 
-export const isValidSessionType = (type: string): type is import('./types').SessionType => {
+export const isValidSessionType = (
+  type: string
+): type is import('./types').SessionType => {
   return type === 'SCRIPT';
 };

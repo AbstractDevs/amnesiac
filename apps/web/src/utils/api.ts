@@ -5,7 +5,8 @@
 const getApiBaseUrl = (): string => {
   // In development, use .env.local
   // In production, use environment variables set by GitHub Actions
-  const apiUrl = import.meta.env.PUBLIC_API_BASE_URL || 'http://localhost:3000/api';
+  const apiUrl =
+    import.meta.env.PUBLIC_API_BASE_URL || 'http://localhost:3000/api';
   return apiUrl;
 };
 
